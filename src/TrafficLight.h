@@ -5,7 +5,6 @@
 #include <deque>
 #include <condition_variable>
 #include "TrafficObject.h"
-#include "Utils.h"
 
 // forward declarations to avoid include cycle
 class Vehicle;
@@ -48,8 +47,6 @@ private:
 
     TrafficLightPhase _currentPhase;
     MessageQueue<TrafficLightPhase> _trafficLightQueue;
-    std::condition_variable _condition;
-    std::mutex _mutex;
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <random>
 #include "TrafficLight.h"
+#include "Utils.h"
 
 /* Implementation of class "MessageQueue" */
 
@@ -20,6 +21,7 @@ template <typename T>
 void MessageQueue<T>::send(T &&msg)
 {
     std::lock_guard<std::mutex> lock(_mutex);
+    _queue.clear();
     _queue.emplace_back(msg);
     _condition.notify_one();
 }
@@ -49,6 +51,7 @@ void TrafficLight::simulate()
 void TrafficLight::cycleThroughPhases()
 {
     std::chrono::time_point<std::chrono::system_clock> lastUpdate;
+    long cycleDuration = getChonoBetweenInterval<std::chrono::milliseconds>(4000, 6000).count(); // run cycle in ms
     lastUpdate = std::chrono::system_clock::now();
     while (true)
     {
@@ -58,8 +61,10 @@ void TrafficLight::cycleThroughPhases()
         // calculate elapsed time since last run
         long timeSinceLastUpdate = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - lastUpdate).count();
 
-        // Simule some work
-        std::this_thread::sleep_for(getChonoBetweenInterval<std::chrono::seconds>(4, 6));
+        if (timeSinceLastUpdate < cycleDuration)
+        {
+            continue;
+        }
 
         // toggle _currentPhase
         _currentPhase = (_currentPhase == TrafficLightPhase::red) ? TrafficLightPhase::green : TrafficLightPhase::red;
