@@ -1,4 +1,7 @@
+#pragma once
+
 #include <chrono>
+#include <random>
 
 // Return a chrono time between the given interval.
 // Pre: T should be a str::chrono type
