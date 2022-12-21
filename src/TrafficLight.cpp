@@ -12,7 +12,7 @@ T MessageQueue<T>::receive()
     // The received object should then be returned by the receive function. 
     auto lock = std::unique_lock<std::mutex>(_mutex);
     _condition.wait(lock, [&]()
-                    { return !_queue.isEmpty(); });
+                    { return !_queue.empty(); });
 
     auto &msg = _queue.front();
     _queue.pop_front();
@@ -76,11 +76,11 @@ void TrafficLight::cycleThroughPhases()
         // Simule some work
         std::this_thread::sleep_for(getChonoBetweenInterval<std::chrono::seconds>(4, 6));
 
-        auto tempPhase = _currentPhase;
-        _trafficLightQueue.send(std::move(tempPhase));
-
         // toggle _currentPhase
         _currentPhase = (_currentPhase == TrafficLightPhase::red) ? TrafficLightPhase::green : TrafficLightPhase::red;
+        
+        auto tempPhase = _currentPhase;
+        _trafficLightQueue.send(std::move(tempPhase));
 
         // reset for new run cycle
         lastUpdate = std::chrono::system_clock::now();
